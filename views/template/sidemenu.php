@@ -162,9 +162,6 @@
                 <a class="nav-link" href="<?php echo base_url(); ?>Produk/produksi"><i class="fas fa-fw fa-chart-area"></i>Produksi</a>
             </li>
             <li class="nav-item" <?= $aksesUs ?>>
-                <a class="nav-link" href="<?php echo base_url(); ?>Persediaan/pindahtoko_pilcab"><i class="fas fa-fw fa-chart-area"></i>Pindah Toko</a>
-            </li>
-            <li class="nav-item" <?= $aksesUs ?>>
                 <a class="nav-link" href="<?php echo base_url(); ?>Produk/distribusi"><i class="fas fa-fw fa-chart-area"></i>Distribusi</a>
             </li>
             <li class="nav-item">
@@ -184,7 +181,7 @@
                             $arrayAkses = ['1'];
                             if (in_array($this->session->userdata('ses_akses'), $arrayAkses)) $aksesUs = "";
                         ?>
-            <li class="nav-item">
+            <li class="nav-item" <?= $aksesUs ?>>
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages12"
                     aria-expanded="true" aria-controls="collapsePages12">
                     <i class="fas fa-fw fa-chart-area"></i>
@@ -194,15 +191,26 @@
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="collapse-item" href="<?php echo base_url(); ?>laporan/laporan_keuangan" <?= $aksesUs ?>>Keuangan</a>
                         <a class="collapse-item" href="<?php echo base_url(); ?>laporan/total_jual_tgl" <?= $aksesUs ?>>Rekap Penjualan</a>
-                        <a class="collapse-item" href="<?php echo base_url(); ?>laporan/pengeluaran_tgl" <?= $aksesUs ?>>History Pengeleuaran</a>
+                        <a class="collapse-item" href="<?php echo base_url(); ?>laporan/pengeluaran_tgl" <?= $aksesUs ?>>History Pengeluaran</a>
                         <a class="collapse-item" href="<?php echo base_url(); ?>laporan/tgl_penjualan" <?= $aksesUs ?>>History Detail Penjualan</a>
-                        <a class="collapse-item" href="<?php echo base_url(); ?>laporan/tgl_persediaan" <?= $aksesUs ?>>History Persediaan</a>
+                        <!-- <a class="collapse-item" href="<?php echo base_url(); ?>laporan/tgl_persediaan" <?= $aksesUs ?>>History Persediaan</a> -->
                         <a class="collapse-item" href="<?php echo base_url(); ?>laporan/tgl_Distribusi" <?= $aksesUs ?>>History Distribusi</a>
                         <a class="collapse-item" href="<?php echo base_url(); ?>laporan/tgl_produksi" <?= $aksesUs ?>>History Produksi</a> 
                     </div>
                 </div>
             </li>
-
+            <hr class="sidebar-divider d-none d-md-block" <?= $aksesUs ?>>
+            <li class="nav-item" <?= $aksesUs ?>>
+                <a class="nav-link" href="<?php echo base_url(); ?>Persediaan/pindahtoko_pilcab"><i class="fas fa-fw fa-chart-area"></i>Pindah Toko</a>
+            </li>
+            <?php
+                $aksesUs = "hidden";
+                $arrayAkses = ['2'];
+                if (in_array($this->session->userdata('ses_akses'), $arrayAkses)) $aksesUs = "";
+            ?>
+            <li class="nav-item" <?= $aksesUs ?>>
+                <a class="nav-link" href="<?php echo base_url(); ?>Produk/terimabarang_pindah"><i class="fas fa-fw fa-chart-area"></i>Terima Barang Pindah</a>
+            </li>
 
             <!-- Divider -->
             <?php
@@ -255,21 +263,20 @@
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <?php
-                                $userid = $this->session->userdata('ses_id');
                                 $usernm = $this->session->userdata('ses_nama');
                                 $kdcab = $this->session->userdata('ses_cab');
                                 ?>
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?= $userid; ?>-<?= $usernm; ?>-<?= $kdcab; ?></span>
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?= $usernm; ?> - <?= $kdcab; ?></span>
                                 <img class="img-profile rounded-circle"
                                     src="<?php echo base_url(); ?>/aset/img/undraw_profile.svg">
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="userDropdown">
-                                <!-- <a class="dropdown-item" href="<?php echo base_url(); ?>Home/pindah_cabang">
+                                <a class="dropdown-item" href="<?php echo base_url(); ?>Parameter/change_passwd">
                                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Pindah Cabang
-                                </a> -->
+                                    Change Password
+                                </a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>

@@ -361,7 +361,7 @@ $(document).ready(function() {
     var table = $('#myTable2').DataTable({
         dom: 'Bflrtip',
         buttons: ['excelHtml5'],
-        pageLength: 25, // Set default number of rows to display
+        pageLength: 100, // Set default number of rows to display
         drawCallback: function() {
             var api = this.api();
             
