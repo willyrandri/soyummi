@@ -124,7 +124,7 @@
                                             ?></td>
                                             <td><?= $tanggal_jual ?></td>
                                             <td><?= $noid ?></td>
-                                            <td><?= $namamenu ?></td>
+                                            <td><b><?= $namamenu ?></b></td>
                                             <td><b><?= $jumlah ?></b></td>
                                             <td><?php echo number_format($harga); ?></td>
                                             <td><?php echo number_format($totalharga); ?></td>

@@ -19,6 +19,7 @@
 
 
 <head>
+    
 <style>
         
         .alert {
@@ -65,9 +66,42 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        
-                        <h4 class="card-title">Orderan Aktiv</h4>          
+                        <?php $usercab = $this->session->userdata('ses_cab'); ?>
+                        <h4 class="card-title">Orderan Rekap <?= $usercab; ?></h4>
+                        <table id="myTable2" class="table table-striped table-bordered display">
+                                <thead>
+                                    <tr>
+                                        <th>Pembayaran</th>
+                                        <th>Total Bayar</th>
+                                        <th>Total Diskon</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    $i = 1;
+                                    if ($datamenu_cal) {
+                                        foreach ($datamenu_cal as $datax) {
+                                            $carabayarx = $datax->carabayar;
+                                            $tharga = $datax->tharga;
+                                            $tdiskon = $datax->tdiskon;
+                                    ?>
+                                        <tr>
+                                            <td><?= $carabayarx ?></td>
+                                            <td><?php echo number_format($tharga); ?></td>
+                                            <td><?php echo number_format($tdiskon); ?></td>
+                                        </tr>
+                                    <?php
+                                        }
+                                    }
+                                    ?>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                    </tr>
+                                </tfoot>
+                            </table>         
                         <hr>
+                        <h4 class="card-title">Orderan Detail</h4>
                         <div class="table-responsive">
                             <!-- <table id="mytable" class="table table-striped table-bordered"> -->
                             <table id="myTable" class="table table-striped table-bordered display">
@@ -143,7 +177,7 @@
                                                 if (in_array($this->session->userdata('ses_akses'), $arrayAkses)) $aksesUs = "";
                                             ?>
                                                <a href="<?php echo site_url('persediaan/order_detail/' . $id_penjualan); ?>" class="btn btn-primary btn-sm" role="button">Detail</a>
-                                               <!-- <a href="<?php echo site_url('persediaan/order_detail/' . $id_penjualan); ?>" class="btn btn-success btn-sm" role="button">Check-Out</a> -->
+                                               <a href="<?php echo site_url('persediaan/order_edit/' . $id_penjualan); ?>" class="btn btn-warning btn-sm" role="button">Edit</a>
                                             </td>
                                         </tr>
                                     <?php
@@ -178,7 +212,7 @@ $(document).ready(function() {
     var table = $('#myTable').DataTable({
         dom: 'Bflrtip',
         buttons: ['excelHtml5'],
-        pageLength: 25, // Set default number of rows to display
+        pageLength: 100, // Set default number of rows to display
         drawCallback: function() {
             var api = this.api();
 

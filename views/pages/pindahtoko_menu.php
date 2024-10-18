@@ -129,6 +129,7 @@ $(document).ready(function() {
     $('#myTable2').DataTable({
         dom: 'Bflrtip',
         buttons: ['excelHtml5'],
+        pageLength: 100,
     });
 
     $('.tambah-btn').click(function() {

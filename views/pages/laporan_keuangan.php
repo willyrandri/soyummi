@@ -142,6 +142,7 @@ $(document).ready(function() {
     $('#myTable2').DataTable({
         dom: 'Bflrtip',
         buttons: ['excelHtml5'],
+        pageLength: 100,
         footerCallback: function ( row, data, start, end, display ) {
             var api = this.api();
 

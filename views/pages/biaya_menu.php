@@ -124,9 +124,8 @@
     $(document).ready(function() {
         $('#myTable').DataTable({
             dom: 'Bflrtip',
-            buttons: [
-                'excelHtml5',
-            ]
+            buttons: ['excelHtml5'],
+            pageLength: 100,
         });
 
     });

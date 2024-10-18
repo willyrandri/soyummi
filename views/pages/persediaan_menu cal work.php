@@ -63,6 +63,7 @@
         </form>
 
         <form id="orderForm" method="post" action="<?php echo base_url(); ?>persediaan/buat_orderan">
+        <input type="hidden" name="total_price" id="total_price" value="0">
             <!-- ============================================================== -->
             <!-- Start Page Content -->
             <!-- ============================================================== -->
@@ -105,7 +106,7 @@
                             <hr>
                             <div class="table-responsive">
                                 <!-- <table id="mytable" class="table table-striped table-bordered"> -->
-                                <table id="myTable" class="table table-striped table-bordered display">
+                                <table id="myTable2" class="table table-striped table-bordered display">
                                     <thead>
                                         <tr>
                                             <th>No</th>
@@ -136,41 +137,31 @@
                                             <!-- <td><?= $noid ?></td> -->
                                             <td><b><?= $namamenu ?></b></td>
                                             <td><?php echo number_format($harga); ?></td>
-
-
-                                            <td style="background-color: <?= $jumlah < 8 ? '#f06eab' : 'transparent' ?>; color: <?= $jumlah < 8 ? 'white' : 'black' ?>;">
-                                                <?= $jumlah ?>
-                                            </td>
-
-
+                                            <td><?= $jumlah ?></td>
                                             <td><b><?= $tanggal ?></b></td>
                                             <td><?= $kadarluasa ?></td>
                                             <td>
                                                 <!-- tombol jual -->
-
-                                                <span id="jumlah-<?= $noid ?>-<?= $tanggal ?>">0</span> |
+                                                <span id="jumlah-<?= $noid ?>-<?= $tanggal ?>">0</span>
                                                 <span id="total-price-<?= $noid ?>-<?= $tanggal ?>">0</span>
                                                 <input type="hidden" name="jumlahawal[<?= $noid ?>][<?= $tanggal ?>]" value="<?= $jumlah ?>">
 
+                                                <!-- Current quantity (to be edited) -->
                                                 <input type="hidden" name="jumlah[<?= $noid ?>][<?= $tanggal ?>]"
                                                     value="0" id="input-jumlah-<?= $noid ?>-<?= $tanggal ?>">
+
+                                                <!-- Hidden input for harga -->
                                                 <input type="hidden" name="harga[<?= $noid ?>][<?= $tanggal ?>]"
                                                     value="<?= $harga ?>" id="input-harga-<?= $noid ?>-<?= $tanggal ?>">
 
-                                                <input type="hidden" name="kdcab[<?= $noid ?>][<?= $tanggal ?>]"
-                                                    value="<?= $harga ?>" id="input-kdcab-<?= $noid ?>-<?= $tanggal ?>">
-
-                                                <br>
-                                                <br>
+                                                <!-- Action buttons -->
                                                 <a href="javascript:void(0);" class="btn btn-warning btn-sm kurang-btn"
                                                     data-noid="<?= $noid ?>" data-tanggal="<?= $tanggal ?>"
-                                                    data-jumlah="<?= $jumlah ?>" role="button"><i
-                                                        class="fas fa-minus"></i></a>
+                                                    data-jumlah="<?= $jumlah ?>" role="button"><i class="fas fa-minus"></i></a>
 
                                                 <a href="javascript:void(0);" class="btn btn-primary btn-sm tambah-btn"
                                                     data-noid="<?= $noid ?>" data-tanggal="<?= $tanggal ?>"
-                                                    data-jumlah="<?= $jumlah ?>" role="button"><i
-                                                        class="fas fa-plus"></i></a>
+                                                    data-jumlah="<?= $jumlah ?>" role="button"><i class="fas fa-plus"></i></a>
                                                 <!-- tombol jual -->
                                                 <?php
                                                 $aksesUs = "hidden";
@@ -224,7 +215,9 @@
                             <hr>
                             <div class="d-flex justify-content-end">
                                 <label class="bg-warning"><b>Total: <span id="totalJumlah">0</span></b></label> &nbsp;&nbsp;
+                                <!-- Label for total price of all items -->
                                 <label class="bg-warning"><b>Total Price: <span id="totalPrice">0</span></b></label> &nbsp;&nbsp;
+
                                 <input type="radio" id="tun" name="carabayar" value="Tunai">
                                  <label for="tun">Tunai</label>
                                  <br>&nbsp;&nbsp;
@@ -234,8 +227,8 @@
                             </div>
                             <div class="d-flex justify-content-end">
                                 
-                                <a href="" class="btn btn-success btn-sm" role="button" data-toggle="modal"
-                                    data-target="#butonsell">SELL</a>
+                            <a href="javascript:void(0);" class="btn btn-success btn-sm" role="button" 
+                            data-toggle="modal" data-target="#butonsell" onclick="updateModalValues();">SELL</a>
                                 <div id="butonsell" class="modal fade" tabindex="-1" role="dialog"
                                     aria-labelledby="success-header-modalLabel" aria-hidden="true">
                                     <div class="modal-dialog">
@@ -247,38 +240,36 @@
                                                 <button type="button" class="close" data-dismiss="modal"
                                                     aria-hidden="true">×</button>
                                             </div>
+
                                             <div class="modal-body">
                                                 <div class="form-group row">
-                                                    <label for="fname"
-                                                        class="col-sm-3 text-right control-label col-form-label">Note</label>
+                                                    <label for="fname" class="col-sm-3 text-right control-label col-form-label">Note</label>
                                                     <div class="col-sm-9">
-                                                        <input type="text" class="form-control" name='catatan'
-                                                            id="jenis" placeholder="Catatan" required>
+                                                        <input type="text" class="form-control" name='catatan' id="jenis" placeholder="Catatan">
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
-                                                    <label for="fname"
-                                                        class="col-sm-3 text-right control-label col-form-label">Discount</label>
+                                                    <label for="fname" class="col-sm-3 text-right control-label col-form-label">Discount</label>
                                                     <div class="col-sm-9">
-                                                        <input type="number" class="form-control" name='diskon'
-                                                            id="jenis" placeholder="Discount dalam rupiah">
+                                                        <input type="number" class="form-control" name='diskon' id="jenis" placeholder="Discount dalam rupiah">
                                                     </div>
                                                 </div>
-
+                                                
+                                                <!-- New Section for Showing the Total Sum and Total Price -->
                                                 <div class="form-group row">
-                                                    <label class="col-sm-3 text-right control-label col-form-label">Total_Jumlah:</label>
+                                                    <label class="col-sm-3 text-right control-label col-form-label">T jml:</label>
                                                     <div class="col-sm-9">
                                                         <span id="modal-total-quantity">0</span>
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
-                                                    <label class="col-sm-3 text-right control-label col-form-label">Total_Harga:</label>
+                                                    <label class="col-sm-3 text-right control-label col-form-label">Total Price:</label>
                                                     <div class="col-sm-9">
                                                         <span id="modal-total-price">0</span>
                                                     </div>
                                                 </div>
-
                                             </div>
+
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-light"
                                                     data-dismiss="modal">Close</button>
@@ -304,41 +295,34 @@
 <script>
 $(document).ready(function() {
     $('#myTable').DataTable({
-    dom: 'Bflrtip',
-    buttons: [
-        {
-            extend: 'excelHtml5',
-            title: 'Sooyummeh Stock - ' + new Date().toLocaleDateString(), // Title for the Excel file
-            filename: 'Sooyummeh_' + new Date().toLocaleDateString().replace(/\//g, '-'), // Replace slashes with hyphens for the filename
-        }
-    ],
-    pageLength: 100,
-});
+        dom: 'Bflrtip',
+        buttons: ['excelHtml5'],
+    });
 
-
-    let totalSum = 0;
-    let grandTotalPrice = 0;
+    let totalSum = 0; // Tracks total quantity across all items
+    let grandTotalPrice = 0; // Tracks total price across all items
 
     function updateTotal() {
-        $('#totalJumlah').text(totalSum);
-        $('#totalPrice').text(grandTotalPrice.toLocaleString());
+        $('#totalJumlah').text(totalSum); // Update total quantity displayed
+        $('#totalPrice').text(grandTotalPrice.toLocaleString()); // Update grand total price displayed
     }
 
+    // Add quantity
     $('.tambah-btn').click(function() {
         var noid = $(this).data('noid');
         var tanggal = $(this).data('tanggal');
         var maxJumlah = $(this).data('jumlah');
         var jumlahElement = $('#jumlah-' + noid + '-' + tanggal);
-        var inputJumlahElement = $('#input-jumlah-' + noid + '-' + tanggal);
         var totalPriceElement = $('#total-price-' + noid + '-' + tanggal);
-        var jumlah = parseInt(jumlahElement.text());
+        var jumlah = parseInt(jumlahElement.text()) || 0; // Get current quantity
         var harga = parseInt($(`input[name="harga[${noid}][${tanggal}]"]`).val()) || 0; // Get unit price
 
+        // Check if maxJumlah is not reached
         if (jumlah < maxJumlah) {
             jumlah++;
-            jumlahElement.text(jumlah);
-            inputJumlahElement.val(jumlah);
-            totalSum++; // Increase the total sum
+            jumlahElement.text(jumlah); // Update displayed quantity
+            totalSum++; // Increase total quantity
+
             // Calculate and update total price for this item
             var itemTotalPrice = jumlah * harga;
             totalPriceElement.text(itemTotalPrice.toLocaleString()); // Update total price for this item
@@ -349,21 +333,20 @@ $(document).ready(function() {
         }
     });
 
-
+    // Decrease quantity
     $('.kurang-btn').click(function() {
         var noid = $(this).data('noid');
         var tanggal = $(this).data('tanggal');
         var jumlahElement = $('#jumlah-' + noid + '-' + tanggal);
-        var inputJumlahElement = $('#input-jumlah-' + noid + '-' + tanggal);
         var totalPriceElement = $('#total-price-' + noid + '-' + tanggal);
-        var jumlah = parseInt(jumlahElement.text());
+        var jumlah = parseInt(jumlahElement.text()) || 0; // Get current quantity
         var harga = parseInt($(`input[name="harga[${noid}][${tanggal}]"]`).val()) || 0; // Get unit price
 
         if (jumlah > 0) {
             jumlah--;
-            jumlahElement.text(jumlah);
-            inputJumlahElement.val(jumlah);
-            totalSum--; // Decrease the total sum
+            jumlahElement.text(jumlah); // Update displayed quantity
+            totalSum--; // Decrease total quantity
+
             // Calculate and update total price for this item
             var itemTotalPrice = jumlah * harga;
             totalPriceElement.text(itemTotalPrice.toLocaleString()); // Update total price for this item
@@ -376,25 +359,48 @@ $(document).ready(function() {
 
     updateTotal(); // Initialize the totals based on existing values
 
-    $('#butonsell').on('show.bs.modal', function() {
-            // Get the values from totalJumlah and totalPrice
-            var totalJumlah = $('#totalJumlah').text();
-            var totalPrice = $('#totalPrice').text();
+    // Single form submit handler
+    $('form').on('submit', function(event) {
+    event.preventDefault(); // Prevent the default form submission
 
-            // Update the modal spans with the values
-            $('#modal-total-quantity').text(totalJumlah);
-            $('#modal-total-price').text(totalPrice);
-        });
+    // Log form data for debugging
+    console.log('Form Data:', $(this).serialize());
 
-    // Remove the form submit handler or ensure it correctly submits the form
-    $('form').off('submit').on('submit', function(event) {
-        // You may log the form data for debugging if needed
-        console.log('Form Data:', $(this).serialize());
-        // Uncomment the line below to actually submit the form if needed
-        // this.submit();
+    // AJAX submission
+    $.ajax({
+        type: 'POST',
+        url: '<?php echo base_url(); ?>persediaan/buat_orderan', // URL to handle form submission
+        data: $(this).serialize(), // Serialize form data
+        success: function(response) {
+            console.log('Response received:', response); // Log success message for debugging
+            // Redirect to the review page
+            window.location.href = '<?php echo base_url(); ?>persediaan/orderaktiv'; // URL to review the order
+        },
+        error: function(xhr, status, error) {
+            console.error('Form submission failed:', error); // Log error for debugging
+            alert('An error occurred while submitting the form. Please try again.'); // Alert the user of the error
+        }
     });
 });
 
+    $('#butonsell').on('show.bs.modal', function() {
+        updateModalValues(); // Call to update totals when the modal opens
+    });
+    
+
+});
+
+// Function to update modal values
+function updateModalValues() {
+    const totalQuantity = parseInt(document.getElementById('totalJumlah').innerText) || 0;
+    const totalSumPriceText = document.getElementById('totalPrice').innerText; // Get the formatted string
+    const totalSumPrice = parseInt(totalSumPriceText.replace(/,/g, '')) || 0; // Remove commas and convert to integer
+
+    document.getElementById('modal-total-quantity').innerText = totalQuantity;
+    document.getElementById('modal-total-price').innerText = totalSumPriceText; // Use the formatted string directly
+}
+
+// Alert function for flash messages
 document.addEventListener('DOMContentLoaded', function() {
     // Function to show alert
     function showAlert(type, message) {
@@ -422,39 +428,4 @@ document.addEventListener('DOMContentLoaded', function() {
     showAlert('error', '<?php echo $this->session->flashdata('error_message'); ?>');
     <?php endif; ?>
 });
-</script>
-
-<script>
-function refreshData() {
-    // Get the selected kodecabang value
-    var selectedKodecabang = document.querySelector('input[name="kodecabang"]:checked').value;
-    // Set the value in the hidden refresh form
-    document.getElementById('refreshKodecabang').value = selectedKodecabang;
-    // Submit the refresh form
-    document.getElementById('refreshForm').submit();
-}
-
-// Submit the form via AJAX
-
-$('form').on('submit', function(event) {
-    event.preventDefault(); // Prevent the default form submission
-
-    var formData = $(this).serialize(); // Serialize form data
-
-    $.ajax({
-        type: 'POST',
-        url: '<?php echo base_url(); ?>persediaan/buat_orderan', // URL to handle form submission
-        data: formData,
-        success: function(response) {
-            // Redirect to the review page
-            window.location.href =
-                '<?php echo base_url(); ?>persediaan/review_orderan'; // URL to review the order
-        },
-        error: function(xhr, status, error) {
-            console.error('Form submission failed:', error);
-            // Optionally show an error message to the user
-        }
-    });
-});
-
 </script>

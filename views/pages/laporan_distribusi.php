@@ -84,7 +84,7 @@
                                             <th>Nama Menu</th>
                                             <th>Harga</th>
                                             <th>Jumlah</th>
-                                            <th>Tgl Jual</th>
+                                            <th>Tgl </th>
                                             <th>User</th>
                                         </tr>
                                     </thead>
@@ -141,6 +141,7 @@ $(document).ready(function() {
     $('#myTable2').DataTable({
         dom: 'Bflrtip',
         buttons: ['excelHtml5'],
+        pageLength: 100,
     });
 });
 </script>

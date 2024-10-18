@@ -186,7 +186,7 @@ $(document).ready(function() {
     var table = $('#myTable2').DataTable({
         dom: 'Bflrtip',
         buttons: ['excelHtml5'],
-        pageLength: 25,
+        pageLength: 100,
         drawCallback: function() {
             var api = this.api();
             var numCols = api.columns().header().length;

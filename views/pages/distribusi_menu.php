@@ -79,7 +79,7 @@
                                             foreach ($datacab as $data2) {
                                                 $kodecabang = $data2->kodecabang;
                                                 $namacabang = $data2->namacabang;
-                                                echo "<th>stock<br>$namacabang</th>";
+                                                echo "<th>stock total<br>$namacabang</th>";
                                             }
                                         }
                                         ?>
@@ -89,7 +89,7 @@
                                             foreach ($datacab as $data2) {
                                                 $kodecabang = $data2->kodecabang;
                                                 $namacabang = $data2->namacabang;
-                                                echo "<th>$namacabang</th>";
+                                                echo "<th>stock baru<br>$namacabang</th>";
                                             }
                                         }
                                         ?>
@@ -171,7 +171,7 @@
                                             <td><b><?= $tanggal ?></b></td>
                                             <td><?= $kadarluasa ?></td>
                                             <td>
-                                                <input type="text" name="jumlah[<?= $noid ?>][<?= $tanggal ?>]" value="0" id="jumlah-<?= $noid ?>-<?= $tanggal ?>" class="form-control">
+                                                <input type="number" name="jumlah[<?= $noid ?>][<?= $tanggal ?>]" value="0" id="jumlah-<?= $noid ?>-<?= $tanggal ?>" class="form-control" max="<?= $sisa ?>">
                                                 <input type="hidden" name="harga[<?= $noid ?>][<?= $tanggal ?>]" value="<?= $harga ?>" id="input-harga-<?= $noid ?>-<?= $tanggal ?>">
                                                 <input type="hidden" name="kadarluasa[<?= $noid ?>][<?= $tanggal ?>]" value="<?= $kadarluasa ?>" id="input-kadarluasa-<?= $noid ?>-<?= $tanggal ?>"> <!-- Hidden input for kadarluasa value -->
                                                 <br>
@@ -182,8 +182,8 @@
 
 
                                             <td>
-                                                <a href="" class="btn btn-danger btn-sm" role="button" data-toggle="modal" data-target="#deletecab<?= $kodecabang ?>">Delete</a>
-                                                    <div id="deletecab<?= $kodecabang ?>" class="modal fade" tabindex="-1" role="dialog"
+                                                <a href="" class="btn btn-danger btn-sm" role="button" data-toggle="modal" data-target="#deletecab<?= $noid ?>">Delete</a>
+                                                    <div id="deletecab<?= $noid ?>" class="modal fade" tabindex="-1" role="dialog"
                                                         aria-labelledby="warning-header-modalLabel" aria-hidden="true">
                                                         <div class="modal-dialog">
                                                             <div class="modal-content">

@@ -49,9 +49,27 @@
     .fade-out {
         opacity: 0;
     }
+
+    #loading-screen {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(255, 255, 255, 0.8);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
     </style>
 </head>
-
 <!-- ============================================================== -->
 <!-- Page wrapper  -->
 <!-- ============================================================== -->
@@ -71,68 +89,7 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
-                        <h4 class="card-title">Terima Barang - <?= $kodecab;?></h4>
-                            <br>
-                            <?php
-                        $ses_akses = $this->session->userdata('ses_akses');
-                        if ($ses_akses =='1'){
-                             if ($datacab) {
-                                foreach ($datacab as $data2) {
-                                      $kdcab = $data2->kodecabang;
-                                      $namacabang = $data2->namacabang;
-                                    $isChecked = ($kdcab == $kodecab) ? 'checked' : '';
-                                      ?>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="kodecabang" id="cabang-<?= $kdcab ?>"
-                                    value="<?= $kdcab ?>" <?= htmlspecialchars($isChecked) ?> required>
-                                <label class="form-check-label" for="cabang-<?= $kdcab ?>">
-                                    <?= $namacabang ?>
-                                </label>
-
-                            </div>
-
-                            <?php 
-                                     }
-                                     ?>
-                            <a href="javascript:void(0);" class="btn btn-primary btn-sm" role="button"
-                                onclick="refreshData();">Refresh</a>
-                                <?php
-                                                $aksesUs = "hidden";
-                                                $arrayAkses = ['1'];
-                                                if (in_array($this->session->userdata('ses_akses'), $arrayAkses)) $aksesUs = "";
-                                                ?>
-                                <a href="" class="btn btn-warning btn-sm" role="button" data-toggle="modal" data-target="#terimaall"
-                                                    <?= $aksesUs ?>>Terima Semua</a>
-                                <div id="terimaall" class="modal fade" tabindex="-1"
-                                                    role="dialog" aria-labelledby="danger-header-modalLabel"
-                                                    aria-hidden="true">
-                                                    <div class="modal-dialog">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header modal-colored-header bg-danger">
-                                                                <h4 class="modal-title text-white"
-                                                                    id="warning-header-modalLabel">
-                                                                    Yakin di terima semua?
-                                                                </h4>
-                                                                <button type="button" class="close" data-dismiss="modal"
-                                                                    aria-hidden="true">×</button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                <h5 class="mt-0">Data yg sudah didistribukan akan masuk semua ke persediaan</h5>
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-light"
-                                                                    data-dismiss="modal">Close</button>
-                                                                <button type="submit" class="btn btn-info waves-effect waves-light">Terima All</button>
-                                                            </div>
-                                                        </div><!-- /.modal-content -->
-                                                    </div><!-- /.modal-dialog -->
-                                                </div><!-- /.modal -->
-
-                            <?php
-                                }
-                             }
-                         else {};
-                        ?>
+                        <h4 class="card-title">Terima Barang Pindah ke - <?= $kodecab;?></h4>
                             <hr>
                             <div class="table-responsive">
                                 <!-- <table id="mytable" class="table table-striped table-bordered"> -->
@@ -152,7 +109,7 @@
                                     </thead>
                                     <tbody>
                                         <?php
-                                   
+                                    $i = 1;
                                     if ($datamenu) {
                                         foreach ($datamenu as $data) {
                                             $noid = $data->noid;
@@ -166,7 +123,7 @@
                                             $iddist = $data->iddist;
                                     ?>
                                         <tr>
-                                            <td><?= $norut ?></td>
+                                            <td><?= $i++ ?></td>
                                             <!-- <td><?= $noid ?></td> -->
                                             <td><b><?= $namamenu ?></b></td>
                                             <td><?php echo number_format($harga); ?></td>
@@ -179,7 +136,7 @@
                                                 <!-- tombol check -->
                                                 <a href="javascript:void(0);" class="btn btn-success btn-sm check-btn"
                                                     data-noid="<?= $noid ?>" data-tanggal="<?= $tanggal ?>"
-                                                    data-kodecabang="<?= $kodecabang ?>" data-iddist="<?= $iddist ?>" role="button">
+                                                    data-kodecabang="<?= $kodecabang ?>" role="button">
                                                     <i class="fas fa-check"></i>
                                                 </a>
                                                 <!-- tombol check -->
@@ -188,36 +145,6 @@
                                                 $arrayAkses = ['1'];
                                                 if (in_array($this->session->userdata('ses_akses'), $arrayAkses)) $aksesUs = "";
                                                 ?>
-                                                <a href="" class="btn btn-danger btn-sm" role="button"
-                                                    data-toggle="modal" data-target="#deletecab<?= $noid ?>"
-                                                    <?= $aksesUs ?>>Delete</a>
-                                                <div id="deletecab<?= $noid ?>" class="modal fade" tabindex="-1"
-                                                    role="dialog" aria-labelledby="warning-header-modalLabel"
-                                                    aria-hidden="true">
-                                                    <div class="modal-dialog">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header modal-colored-header bg-warning">
-                                                                <h4 class="modal-title text-white"
-                                                                    id="warning-header-modalLabel">
-                                                                    Yakin di hapus?
-                                                                </h4>
-                                                                <button type="button" class="close" data-dismiss="modal"
-                                                                    aria-hidden="true">×</button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                <h5 class="mt-0">Data jika salah input ulang di produksi
-                                                                    !!</h5>
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-light"
-                                                                    data-dismiss="modal">Close</button>
-                                                                <a href="<?php echo site_url('persediaan/dist_delete/' . $noid. '/' .$tanggal. '/' .$kodecabang. '/' .$iddist); ?>"
-                                                                    class="btn btn-secondary btn-sm"
-                                                                    role="button">Delete</a>
-                                                            </div>
-                                                        </div><!-- /.modal-content -->
-                                                    </div><!-- /.modal-dialog -->
-                                                </div><!-- /.modal -->
                                             </td>
                                         </tr>
                                         <?php
@@ -239,6 +166,14 @@
         </form>
     </div>
 </div>
+
+
+<div id="loading-screen" style="display: none;">
+    <div class="spinner-border" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+</div>
+
 <!-- ============================================================== -->
 <!-- End Container fluid  -->
 <!-- ============================================================== -->
@@ -253,20 +188,53 @@ $(document).ready(function() {
 
 });
 
+// $(document).on('click', '.check-btn', function() {
+//     var noid = $(this).data('noid');
+//     var tanggal = $(this).data('tanggal');
+//     var kodecabang = $(this).data('kodecabang');
+//     var iddist = $(this).data('iddist');
+
+//     $.ajax({
+//         url: '<?php echo base_url(); ?>Produk/update_pindahtoko',
+//         type: 'POST',
+//         data: {
+//             noid: noid,
+//             tanggal: tanggal,
+//             kodecabang: kodecabang
+//         },
+//         success: function(response) {
+//             var data = JSON.parse(response);
+//             if (data.status == 'success') {
+//                 alert(data.message);
+//                 location.reload(); // Refresh the page
+//             } else {
+//                 alert(data.message);
+//             }
+//         },
+//         error: function(xhr, status, error) {
+//             console.log(error);
+//         }
+//     });
+// });
+
 $(document).on('click', '.check-btn', function() {
     var noid = $(this).data('noid');
     var tanggal = $(this).data('tanggal');
     var kodecabang = $(this).data('kodecabang');
-    var iddist = $(this).data('iddist');
+    
+    // Disable the button to prevent multiple clicks
+    $(this).prop('disabled', true);
+    
+    // Show the loading screen
+    $('#loading-screen').show();
 
     $.ajax({
-        url: '<?php echo base_url(); ?>persediaan/update_status',
+        url: '<?php echo base_url(); ?>Produk/update_pindahtoko',
         type: 'POST',
         data: {
             noid: noid,
             tanggal: tanggal,
-            kodecabang: kodecabang,
-            iddist: iddist
+            kodecabang: kodecabang
         },
         success: function(response) {
             var data = JSON.parse(response);
@@ -279,9 +247,14 @@ $(document).on('click', '.check-btn', function() {
         },
         error: function(xhr, status, error) {
             console.log(error);
+        },
+        complete: function() {
+            // Hide the loading screen
+            $('#loading-screen').hide();
         }
     });
 });
+
 
 document.addEventListener('DOMContentLoaded', function() {
     // Function to show alert
@@ -298,15 +271,5 @@ document.addEventListener('DOMContentLoaded', function() {
     <?php endif; ?>
 
 });
-
-function refreshData() {
-    // Get the selected kodecabang value
-    var selectedKodecabang = document.querySelector('input[name="kodecabang"]:checked').value;
-    // Set the value in the hidden refresh form
-    document.getElementById('refreshKodecabang').value = selectedKodecabang;
-    // Submit the refresh form
-    document.getElementById('refreshForm').submit();
-}
-
 
 </script>

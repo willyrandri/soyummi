@@ -100,9 +100,8 @@
                                                 <a href="<?php echo site_url('parameter/menu_edit/' . $noid); ?>" class="btn btn-secondary btn-sm" role="button">Edit</a>
                                             </td>
                                             <td>
-                                            <input type="text" class="jumlah-input" id="jumlah-<?= $noid ?>" value="0">  
-                                            <input type="hidden" name="jumlah[<?= $noid ?>]" value="0" id="input-jumlah-<?= $noid ?>"> 
-
+                                                <input type="text" id="jumlah-<?= $noid ?>" value="0"> <!-- Changed to text input -->
+                                                <input type="hidden" name="jumlah[<?= $noid ?>]" value="0" id="input-jumlah-<?= $noid ?>"> <!-- Hidden input to store jumlah value -->
                                                 <input type="hidden" name="harga[<?= $noid ?>]" value="<?= $harga ?>" id="input-harga-<?= $noid ?>"> <!-- Hidden input for harga value -->
                                                 <br>
                                                 <a href="javascript:void(0);" class="btn btn-warning btn-sm kurang-btn" data-noid="<?= $noid ?>" role="button"><i class="fas fa-minus"></i></a>
@@ -136,7 +135,6 @@
                                 <label for="tanggal">Pilih tanggal jika bukan hari ini:</label>
                                 <input type="date" id="tanggal" name="tanggal" class="form-control">
                             </div>
-                            <br>
                         <button type="submit" class="btn btn-danger">Input Produksi</button>
                             <?php
                             if ($datamenu) {
@@ -167,20 +165,6 @@ $(document).ready(function() {
         buttons: ['excelHtml5'],
     });
 
-    // Attach change event to inputs with class 'jumlah-input'
-        $('.jumlah-input').on('change', function() {
-            const noid = this.id.split('-')[1]; // Extract noid from the input's ID
-            updateHiddenInput(noid);
-        });
-
-    function updateHiddenInput(noid) {
-        var jumlahElement = $('#jumlah-' + noid);
-        var inputJumlahElement = $('#input-jumlah-' + noid);
-        var jumlah = parseInt(jumlahElement.val()) || 0; // Default to 0 if NaN
-        inputJumlahElement.val(jumlah); // Update hidden input value
-    }
-
-
     $('.tambah-btn').click(function() {
         var noid = $(this).data('noid');
         var jumlahElement = $('#jumlah-' + noid);
@@ -189,7 +173,7 @@ $(document).ready(function() {
         jumlah++;
         jumlahElement.val(jumlah); // Update text input value
         inputJumlahElement.val(jumlah); // Update hidden input value
-        // console.log('Updated Value for ' + noid + ': ' + jumlah);
+        console.log('Updated Value for ' + noid + ': ' + jumlah);
     });
 
     $('.kurang-btn').click(function() {
@@ -201,7 +185,7 @@ $(document).ready(function() {
             jumlah--;
             jumlahElement.val(jumlah); // Update text input value
             inputJumlahElement.val(jumlah); // Update hidden input value
-            // console.log('Updated Value for ' + noid + ': ' + jumlah);
+            console.log('Updated Value for ' + noid + ': ' + jumlah);
         }
     });
 
@@ -212,42 +196,46 @@ $(document).ready(function() {
         var kadarluasaElement = $('#kadarluasa-' + noid); // Target the <span> element
         var jumlahElement = $('#kadarluasa-jumlah-' + noid); // Target the hidden input
         var currentKadarluasa = parseInt(kadarluasaElement.text()); // Get value from <span>
-        // console.log('Current Kadarluasa Value:', currentKadarluasa);
+        console.log('Current Kadarluasa Value:', currentKadarluasa);
 
         if (!isNaN(currentKadarluasa)) {
             currentKadarluasa++;
             kadarluasaElement.text(currentKadarluasa); // Update <span> with new value
             jumlahElement.val(currentKadarluasa); // Update hidden input with new value
-            // console.log('Updated Kadarluasa Value for ' + noid + ': ' + currentKadarluasa);
+            console.log('Updated Kadarluasa Value for ' + noid + ': ' + currentKadarluasa);
         } else {
-            // console.error('Failed to parse Kadarluasa value');
+            console.error('Failed to parse Kadarluasa value');
         }
     });
 
     $('.kadar-kurang-btn').click(function() {
         var noid = $(this).data('noid');
-        // console.log('Kadarluasa Kurang Button Clicked for noid:', noid);
+        console.log('Kadarluasa Kurang Button Clicked for noid:', noid);
         
         var kadarluasaElement = $('#kadarluasa-' + noid); // Target the <span> element
         var jumlahElement = $('#kadarluasa-jumlah-' + noid); // Target the hidden input
         var currentKadarluasa = parseInt(kadarluasaElement.text()); // Get value from <span>
-        // console.log('Current Kadarluasa Value:', currentKadarluasa);
+        console.log('Current Kadarluasa Value:', currentKadarluasa);
 
         if (!isNaN(currentKadarluasa) && currentKadarluasa > 0) {
             currentKadarluasa--;
             kadarluasaElement.text(currentKadarluasa); // Update <span> with new value
             jumlahElement.val(currentKadarluasa); // Update hidden input with new value
-            // console.log('Updated Kadarluasa Value for ' + noid + ': ' + currentKadarluasa);
+            console.log('Updated Kadarluasa Value for ' + noid + ': ' + currentKadarluasa);
         } else {
-            // console.error('Failed to parse Kadarluasa value or value is already zero');
+            console.error('Failed to parse Kadarluasa value or value is already zero');
         }
     });
+
+
+
+
 
 
     // Remove the form submit handler or ensure it correctly submits the form
     $('form').off('submit').on('submit', function(event) {
         // You may log the form data for debugging if needed
-        // console.log('Form Data:', $(this).serialize());
+        console.log('Form Data:', $(this).serialize());
         // Uncomment the line below to actually submit the form if needed
         // this.submit();
     });
