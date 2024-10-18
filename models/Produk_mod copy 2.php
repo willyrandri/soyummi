@@ -96,10 +96,10 @@ class Produk_mod extends CI_Model
     foreach ($kodecabangList as $row) {
         $kodecabang = $row['kodecabang'];
         $kodecabang2 = "stock".$row['kodecabang'];
-        $pivotColumns[] = "MAX(CASE WHEN c.kodecabang = '$kodecabang' THEN c.jumlah ELSE 0 END) AS `$kodecabang`";
-        $sisaCalculation[] = "COALESCE(MAX(CASE WHEN c.kodecabang = '$kodecabang' THEN c.jumlah ELSE 0 END), 0)";
+        $pivotColumns[] = "SUM(CASE WHEN c.kodecabang = '$kodecabang' THEN c.jumlah ELSE 0 END) AS `$kodecabang`";
+        $sisaCalculation[] = "COALESCE(SUM(CASE WHEN c.kodecabang = '$kodecabang' THEN c.jumlah ELSE 0 END), 0)";
         $jualCalculation[] = "COALESCE(SUM(CASE WHEN d.kodecabang = '$kodecabang' THEN d.jumlah ELSE 0 END), 0)";
-        $distCalculation[] = "COALESCE(MAX(CASE WHEN e.kodecabang = '$kodecabang' THEN e.jumlah ELSE 0 END), 0)";
+        $distCalculation[] = "COALESCE(SUM(CASE WHEN e.kodecabang = '$kodecabang' THEN e.jumlah ELSE 0 END), 0)";
         $perCalculation[] = "SUM(CASE WHEN f.kodecabang = '$kodecabang' THEN f.jumlah ELSE 0 END) AS `$kodecabang2`";
     }
     
@@ -245,70 +245,6 @@ class Produk_mod extends CI_Model
             }
             return $hasil;
         }
-    }
-
-    function get_pindah($cabang)
-    {
-        $hasil = [];
-        $query = $this->db->query("SELECT 
-            a.namamenu,
-            b.noid,
-            a.norut,
-            b.harga,
-            b.tanggal,
-            b.jumlah,
-            b.kadarluasa,
-            b.stat_dist,
-            b.kodecabang,
-            b.iddist
-            FROM 
-            menu_utama a
-            INNER JOIN pindah_toko b ON a.noid = b.noid AND b.jumlah > 0
-            AND b.kodecabang = '".$cabang."' AND b.stat_dist = '1'
-            ORDER BY norut ASC
-        ");
-        if ($query->num_rows() > 0) {
-            foreach ($query->result() as $data) {
-                $hasil[] = $data;
-            }
-            return $hasil;
-        }
-    }
-
-
-    function insertall_persediaan($kdcabang)
-    {
-        $this->db->query("INSERT INTO persediaan SELECT * FROM distribusi WHERE stat_dist = '1' AND kodecabang = '".$kdcabang."' ");
-    }
-
-    function update_distribusi($kdcabang)
-    {
-        $timezone = "Asia/Jakarta";
-		if (function_exists('date_default_timezone_set')) date_default_timezone_set($timezone);
-		$tgljam =  date("ymdHis");
-
-        $userid = $this->session->userdata('ses_id');
-
-        $this->db->set('tglditerima', $tgljam);
-        $this->db->set('userterima', $userid);
-        $this->db->set('stat_dist', '2');
-        $this->db->where('kodecabang', $kdcabang);
-        $this->db->update('distribusi');
-    }
-
-    function update_persediaan_stat($kdcabang)
-    {
-        $timezone = "Asia/Jakarta";
-		if (function_exists('date_default_timezone_set')) date_default_timezone_set($timezone);
-		$tgljam =  date("ymdHis");
-
-        $userid = $this->session->userdata('ses_id');
-
-        $this->db->set('tglditerima', $tgljam);
-        $this->db->set('userterima', $userid);
-        $this->db->set('stat_dist', '2');
-        $this->db->where('kodecabang', $kdcabang);
-        $this->db->update('persediaan');
     }
 
     

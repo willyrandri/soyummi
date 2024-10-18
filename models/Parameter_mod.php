@@ -202,4 +202,11 @@ class Parameter_mod extends CI_Model
         $this->db->update('menu_utama');
     }
 
+    function change_passwd_user($datapass, $nik)
+    {
+        $this->db->set('passwd', $datapass);
+        $this->db->where('nik', $nik);
+        $this->db->update('users');
+    }
+
 }

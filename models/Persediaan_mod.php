@@ -88,6 +88,31 @@ class Persediaan_mod extends CI_Model
         }
     }
 
+    function get_orderan_cal($cabang)
+    {
+        $timezone = "Asia/Jakarta";
+		if (function_exists('date_default_timezone_set')) date_default_timezone_set($timezone);
+		$tgl =  date("ymd");
+
+        $hasil = [];
+        $ses_akses = $this->session->userdata('ses_akses');
+        if ($ses_akses =='1'){
+            $query = $this->db->query("SELECT (SUM(totalharga) - SUM(diskon)) as tharga, SUM(diskon) as tdiskon, carabayar 
+            FROM view_orderanaktiv WHERE statusjual ='1' OR tanggal_jual = '".$tgl."' GROUP BY carabayar");
+		}
+		else{
+			$query = $this->db->query("SELECT (SUM(totalharga) - SUM(diskon)) as tharga, SUM(diskon) as tdiskon, carabayar 
+            FROM view_orderanaktiv  WHERE (statusjual ='1' OR tanggal_jual = '".$tgl."') AND kodecabang = '".$cabang."' GROUP BY carabayar ");
+		}
+        
+        if ($query->num_rows() > 0) {
+            foreach ($query->result() as $data) {
+                $hasil[] = $data;
+            }
+            return $hasil;
+        }
+    }
+
     function get_orderan_print($id_penjualan)
     {
         $timezone = "Asia/Jakarta";
@@ -141,26 +166,59 @@ class Persediaan_mod extends CI_Model
         return $this->db->delete('distribusi'); // Replace 'your_table_name' with the actual table name
     }
 
-    public function kurangi_stok($data) {
-        if ($data) {
-            $tanggal_produksi = $data['tanggal_produksi'];
-            $noid = $data['noid'];
-            $kodecabang = $data['kodecabang'];
-            $jumlahawal = $data['jumlahawal'];
-            $jumlah = $data['jumlah'];
-            $jumlahbaru = $jumlahawal - $jumlah;
+    public function kurangi_stok($data, $jumlahAwal) {
+        // var_dump($jumlahAwal); die();
+            // Ensure necessary keys exist in $data
+            if (isset($data['tanggal_produksi'], $data['noid'], $data['kodecabang'], $data['jumlah'])) {
+                $tanggal_produksi = $data['tanggal_produksi'];
+                $noid = $data['noid'];
+                $kodecabang = $data['kodecabang'];
+                $jumlah = $data['jumlah'];
+                $jumlahbaru = $jumlahAwal - $jumlah; // Use the passed jumlahawal
+                // var_dump ($jumlahbaru); die();
     
-            $this->db->set('jumlah', $jumlahbaru);
-            $this->db->where('noid', $noid);
-            $this->db->where('tanggal', $tanggal_produksi);
-            $this->db->where('kodecabang', $kodecabang);
-            $this->db->update('persediaan');
-        }
+                // Update the stock in the database
+                $this->db->set('jumlah', $jumlahbaru);
+                $this->db->where('noid', $noid);
+                $this->db->where('tanggal', $tanggal_produksi);
+                $this->db->where('kodecabang', $kodecabang);
+                
+                if ($this->db->update('persediaan')) {
+                    // Optional: You can log success or return a success message
+                    return true;
+                } else {
+                    // Handle update error
+                    return 'Failed to update stock';
+                }
+            } else {
+                return 'Missing required data';
+            }
+        
     }
+    
+
+    // public function insert_order($data) {
+    //     return $this->db->insert('penjualan', $data);
+    // }
 
     public function insert_order($data) {
-        return $this->db->insert('penjualan', $data);
+        $this->db->trans_start();
+        $this->db->insert('penjualan', $data);
+        $this->db->trans_complete();
+        
+        // Check for errors after the insert attempt
+        if ($this->db->trans_status() === FALSE) {
+            $error = $this->db->error(); // Get the error details
+            // Check for duplicate entry error code
+            if ($error['code'] == 1062) {
+                return 'Data duplikat';
+            }
+            return 'Terjadi kesalahan saat menyimpan data';
+        }
+        
+        return true; // Successfully inserted
     }
+    
 
     public function select_tahun_jual() {
         $hasil = [];
@@ -261,6 +319,29 @@ class Persediaan_mod extends CI_Model
             // Handle the case where no records are found for the given id_penjualan
             return false;
         }
+    }
+
+
+    function get_jualdata($id_penjualan)
+    {
+        $hasil = [];
+        $query = $this->db->query("SELECT id_penjualan, catatan, diskon 
+            FROM penjualan 
+            WHERE id_penjualan = '".$id_penjualan."'
+            GROUP BY id_penjualan, catatan, diskon ");
+        if ($query->num_rows() > 0) {
+            foreach ($query->result() as $data) {
+                $hasil[] = $data;
+            }
+            return $hasil;
+        }
+    }
+
+
+    function insert_order_edit($data, $id_jual)
+    {
+        $this->db->where('id_penjualan', $id_jual);
+        $this->db->update('penjualan', $data);
     }
     
     

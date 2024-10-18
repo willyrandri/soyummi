@@ -247,34 +247,6 @@ class Produk_mod extends CI_Model
         }
     }
 
-    function get_pindah($cabang)
-    {
-        $hasil = [];
-        $query = $this->db->query("SELECT 
-            a.namamenu,
-            b.noid,
-            a.norut,
-            b.harga,
-            b.tanggal,
-            b.jumlah,
-            b.kadarluasa,
-            b.stat_dist,
-            b.kodecabang,
-            b.iddist
-            FROM 
-            menu_utama a
-            INNER JOIN pindah_toko b ON a.noid = b.noid AND b.jumlah > 0
-            AND b.kodecabang = '".$cabang."' AND b.stat_dist = '1'
-            ORDER BY norut ASC
-        ");
-        if ($query->num_rows() > 0) {
-            foreach ($query->result() as $data) {
-                $hasil[] = $data;
-            }
-            return $hasil;
-        }
-    }
-
 
     function insertall_persediaan($kdcabang)
     {
