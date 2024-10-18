@@ -327,5 +327,26 @@ class Parameter extends CI_Controller
 		redirect('parameter/menu');
 	}
 
+	public function change_passwd($page = 'user_changepass')
+	{
+		if (!file_exists(APPPATH . 'views/pages/' . $page . '.php')) {
+			show_404();
+		}
+
+		$this->load->view('template/sidemenu');
+		$this->load->view('pages/'. $page );
+		$this->load->view('template/footers');
+	}
+
+	public function change_passwd_save()
+	{
+
+		$saveuser = $this->session->userdata('ses_id');
+		
+		$datapass = MD5($_POST['pass']);
+
+		$this->pomod->change_passwd_user($datapass, $saveuser);
+		redirect('parameter/change_passwd');
+	}
 
 }

@@ -50,11 +50,13 @@ class Persediaan extends CI_Controller
 		
 		if ($ses_akses =='1'){
 			$data['datamenu'] = $this->pm->get_orderan($cabang);
+			$data['datamenu_cal'] = $this->pm->get_orderan_cal($cabang);
 			$data['kodecab'] = $cabang;
 		}
 		else{
 			$cabang = $this->session->userdata('ses_cab');
 			$data['datamenu'] = $this->pm->get_orderan($cabang);
+			$data['datamenu_cal'] = $this->pm->get_orderan_cal($cabang);
 			$data['kodecab'] = $cabang;
 		}
 
@@ -145,7 +147,15 @@ class Persediaan extends CI_Controller
 			}
 
 		$newNumber = $year . $number;
-		$cabang = $this->input->post('kodecabang') ? $this->input->post('kodecabang') : 'IntanPayung';
+		
+		$ses_akses = $this->session->userdata('ses_akses');
+		if ($ses_akses =='1'){
+			$cabang = $this->input->post('kodecabang') ? $this->input->post('kodecabang') : 'IntanPayung';
+		}
+		else{
+			$cabang = $this->session->userdata('ses_cab');
+		}
+
 		$catatan = $this->input->post('catatan');
 		$diskon = $this->input->post('diskon') ?? 0;
 		$carabayar = $this->input->post('carabayar');
@@ -173,16 +183,32 @@ class Persediaan extends CI_Controller
 						'updatemod' => $tgljam,
 						'carabayar' => $carabayar
 					];
-					$this->pm->kurangi_stok($insertData);
+
+					$jumlahAwal = isset($insertData['jumlahawal']) ? $insertData['jumlahawal'] : 0;
 
 					unset($insertData['jumlahawal']);
-					$this->pm->insert_order($insertData);
+
+					$result = $this->pm->insert_order($insertData);
+					if ($result === true) {
+						// Redirect or show success message
+						$this->pm->kurangi_stok($insertData, $jumlahAwal);
+					} else {
+						// Conditional error handling
+						if (ENVIRONMENT !== 'production') {
+							show_error($result, 500, 'An Error Was Encountered');
+						} else {
+							$this->session->set_flashdata('error', 'Terjadi kesalahan saat menyimpan data');
+						}
+						break; // Exit the inner loop
+					}
+
 				}
 			}
 		}
-	
-		// Redirect to the review page
-		$this->session->set_flashdata('success_message', 'Order successfully created.');
+		if ($result === true) {
+			$this->session->set_flashdata('success_message', 'Order successfully created.');
+		}
+
 		redirect('persediaan/orderaktiv');
 	}
 
@@ -207,7 +233,7 @@ class Persediaan extends CI_Controller
 		$kodecabang = $this->input->post('kodecabang');
 		$iddist = $this->input->post('iddist');
 	
-		log_message('debug', 'update_status called with noid: ' . $noid . ', tanggal: ' . $tanggal . ', kodecabang: ' . $kodecabang . ', iddist: ' . $iddist);
+		// log_message('debug', 'update_status called with noid: ' . $noid . ', tanggal: ' . $tanggal . ', kodecabang: ' . $kodecabang . ', iddist: ' . $iddist);
 	
 		$timezone = "Asia/Jakarta";
 		if (function_exists('date_default_timezone_set')) date_default_timezone_set($timezone);
@@ -286,10 +312,11 @@ class Persediaan extends CI_Controller
 
 
 	public function pindahtoko_saved() {
-		// $postData = $this->input->post();
-		// var_dump($postData);
-		// die(); // Stop executio
-		// Get the selected cabang from the form
+		$timezone = "Asia/Jakarta";
+		if (function_exists('date_default_timezone_set')) date_default_timezone_set($timezone);
+		$tgljam = date("ymdHis");
+		$tgl = date("y-m-d");
+		$userid = $this->session->userdata('ses_id');
 		$namacabang = $this->input->post('namacabang');
 	
 		// Get the current maximum id_dist and increment it by 1
@@ -301,8 +328,6 @@ class Persediaan extends CI_Controller
 		$kodecabangArray = $this->input->post('kodecabang');
 		$iddistArray = $this->input->post('iddist');
 		$jumlahArray = $this->input->post('jumlah');
-
-
 		
 		foreach ($noidArray as $key => $noid) {
 			// Get the corresponding values
@@ -310,14 +335,6 @@ class Persediaan extends CI_Controller
 			$tanggal = $tanggalArray[$key];
 			$kodecabang = $kodecabangArray[$key];
 			$iddist = $iddistArray[$key];
-		
-			// Debugging output
-			echo 'Key: ' . $key . '<br>';
-			echo 'noid: ' . $noid . '<br>';
-			echo 'jumlah: ' . $jumlah . '<br>';
-			echo 'tanggal: ' . $tanggal . '<br>';
-			echo 'kodecabang: ' . $kodecabang . '<br>';
-			echo 'iddist: ' . $iddist . '<br>';
 		
 			// Only process if jumlah is greater than 0
 			if ($jumlah > 0) {
@@ -330,23 +347,24 @@ class Persediaan extends CI_Controller
 		
 				// Execute the query
 				$persediaanData = $this->db->get('persediaan')->row_array();
-				
+				// var_dump($persediaanData);(die);
 				// Prepare data for insertion into distribusi
 				$dataDistribusi = [
 					'noid' => $persediaanData['noid'],
 					'tanggal' => $persediaanData['tanggal'],
 					'kadarluasa' => $persediaanData['kadarluasa'],
 					'kodecabang' => $namacabang, // Using selected cabang
-					'iddist' => $id_dist,
+					'iddist' => 'P-' . $id_dist,
 					'jumlah' => $jumlah,
 					'stat_dist' => '1',
-					'harga' => $persediaanData['harga'], // Include the harga or any other necessary fields
-					// Add any other necessary fields
+					'harga' => $persediaanData['harga'],
+					'tgldist' => $tgljam,
+					'userdist' => $userid,
+					'tglpindah' => $tgl,
 				];
 				
-				// Insert into distribusi table
-				$this->db->insert('distribusi', $dataDistribusi);
-
+				$this->db->insert('pindah_toko', $dataDistribusi);
+				// var_dump($dataDistribusi);(die);
 				// Now reduce the jumlah in persediaan table
 				$this->db->set('jumlah', 'jumlah - ' . (int)$jumlah, FALSE); // Reduce the jumlah
 				$this->db->where('noid', $noidArray[$key]);
@@ -354,15 +372,43 @@ class Persediaan extends CI_Controller
 				$this->db->where('kodecabang', $kodecabangArray[$key]);
 				$this->db->where('iddist', $iddistArray[$key]);
 				$this->db->update('persediaan');
-
 			}
-		}		
+		}
 	
 		// Redirect or set a flash message
 		$this->session->set_flashdata('success_message', 'Data successfully transferred.');
-		redirect('persediaan/pindahtoko_pilcab'); // Change this to your redirect route
+		redirect('Persediaan/pindahtoko_pilcab'); // Change this to your redirect route
 	}
 
-	
+	public function order_edit($id_penjualan)
+	{
+		// $id_jual = $this->pomod->edit_user_get($id_penjualan);
+		$data['id_jual'] = $this->pm->get_jualdata($id_penjualan);
+		// var_dump($id_jual);
+		// die();
+		$this->load->view('template/sidemenu');
+		$this->load->view('pages/sell_order_edit', $data);
+		$this->load->view('template/footers');
+	}
+
+	public function order_edit_save()
+	{
+		$timezone = "Asia/Jakarta";
+		if (function_exists('date_default_timezone_set')) date_default_timezone_set($timezone);
+		$tgljam =  date("ymdHis");
+
+		$userid = $this->session->userdata('ses_id');
+
+		$id_jual = $_POST['noid'];
+		$data['catatan'] = $_POST['catatan'];
+		$data['diskon'] = $_POST['diskon'];
+		$data['konfirmby'] = $userid;
+		$data['konfirmdate'] = $tgljam;
+
+		$this->pm->insert_order_edit($data, $id_jual);
+		$this->session->set_flashdata('success_message', 'Order successfully created.');
+		redirect('persediaan/orderaktiv');
+	}
+
 
 }
